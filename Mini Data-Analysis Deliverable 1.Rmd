@@ -2,7 +2,7 @@
 title: "Mini Data-Analysis Deliverable 1"
 author: "Tzu-Yi Lu"
 date: "08/10/2021"
-output: html_document
+output: github_document
 ---
 
 # Welcome to your (maybe) first-ever data analysis project!
