@@ -2,7 +2,7 @@
 title: "Mini Data-Analysis Deliverable 2"
 author: "Tzu-Yi Lu,"
 date: "2021 Oct 19"
-output: html_document
+output: github_document
 ---
 
 *To complete this milestone, you can either edit [this `.rmd` file](https://raw.githubusercontent.com/UBC-STAT/stat545.stat.ubc.ca/master/content/mini-project/mini-project-2.Rmd) directly. Fill in the sections that are commented out with `<!--- start your work here--->`. When you are done, make sure to knit to an `.md` file by changing the output in the YAML header to `github_document`, before submitting a tagged release on canvas.*
@@ -122,9 +122,9 @@ ggplot(data=data.frame(x=Ans1.2.1_y$tree_age, y=Ans1.2.1_d$diameter_mean),aes(x=
   xlab("mean tree age of each species (year)")+ylab("mean diameter (inch)")
 
 
-print("Tree age:")
+# Tree age
 print(format(round(Ans1.2.1_y$tree_age, 1), nsmall = 1))
-print("Mean diameter:")
+# Mean diameter
 print(format(round(Ans1.2.1_d$diameter_mean, 1), nsmall = 1))
 
 # Divide a new data.frame only with the chosen 11 species. I will use it for the following analysis.
@@ -231,6 +231,9 @@ Based on the operations that you've completed, how much closer are you to answer
 
 <!------------------------- Write your answer here ---------------------------->
 
+**(A1.3)**:
+
+According to the results shown above, I found that there is no specific spatial distribution in tree species. Maybe I should modify my research questions to investigate the relationship between species and tree growth variables (height/diameter/curb/tree age). In my opinion, the result of Q1.2.1 is interesting. This plot implies that species might be a critical factor regarding the relationship between mean diameter and mean tree age. That is worth being further studied.
 
 <!----------------------------------------------------------------------------->
 
@@ -252,6 +255,24 @@ Based on the definition above, can you identify if your data is tidy or untidy? 
 
 <!--------------------------- Start your work below --------------------------->
 
+**(A2.1)**:
+
+There are 21 variables in my dataset (VanTreeUBC_chosen). I choose "tree_id", "genus_name","species_name","root_barrier","neighbourhood_name","height_range_id","diameter","curb".
+
+"tree_id": Each row is an **observation**, Each column is a **variable**, and Each cell is a **numeric value**.
+"genus_name": Each row is an **observation**, Each column is a **variable**, and Each cell is a **string value**.
+"species_name": Each row is an **observation**, Each column is a **variable**, and Each cell is a **string value**.
+"root_barrier": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including "Y"/"N".
+"neighbourhood_name": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including 5 neighborhoods.
+"height_range_id": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including 10 categorical levels
+"diameter": Each row is an **observation**, Each column is a **variable**, and Each cell is a **numeric value**.
+"curb": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including "Y"/"N".
+
+```{r}
+# Show the first 6 rows of "VanTreeUBC_chosen".
+head(VanTreeUBC_chosen)
+
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -265,6 +286,35 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 
 <!--------------------------- Start your work below --------------------------->
 
+**(A2.2)**: Because VanTreeUBC_chosen is a tidy dataset, I will untidy it.
+
+```{r}
+# Demonstrate the dataset
+print(VanTreeUBC_chosen, n=5)
+
+# Considering the original dataset is not suitable for this task, I simplify the dataset into a smaller matrix.
+VanTreeUBC_chosen_2 <- VanTreeUBC_chosen %>%
+  group_by(species_name,neighbourhood_name) %>%
+  summarize(num=n())
+
+# Before untidying:
+print(VanTreeUBC_chosen_2, n=5)
+
+# Try to untidy the dataset
+A2.2.1 <- pivot_wider(VanTreeUBC_chosen_2, id_cols = species_name, names_from = neighbourhood_name , values_from = num)
+
+# After untidying:
+print(A2.2.1, n=5)
+
+# Try to tidy the dataset
+A2.2.2 <- pivot_longer(A2.2.1, c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY"), names_to = "neighbourhood_name", values_to = "num")
+
+# Dataset check after tidying:
+print(A2.2.2, n=5)
+
+# check whether the dataset is back to original state.
+identical(A2.2.2,VanTreeUBC_chosen_2)
+```
 
 <!----------------------------------------------------------------------------->
 
