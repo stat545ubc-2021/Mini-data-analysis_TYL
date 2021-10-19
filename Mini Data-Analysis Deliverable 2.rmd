@@ -73,6 +73,8 @@ Ensure that the output of each operation is printed!
 Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
+**[Prepare for the dataset]**
+→ Extract datasets within the chosen areas (which are near UBC) and name the variable as "**VanTreeUBC**".
 ```{r}
 # (0) Definition of chosen areas
 # Answer: Listing all neighborhood names and pick observations in specific areas.
@@ -81,36 +83,145 @@ all_neighbor <- vancouver_trees %>%
   group_by(neighbourhood_name) %>%
   count()
 chosen_area <- c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY")
-VanTreeUBC <- filter(vancouver_trees, neighbourhood_name %in% chosen_area) %>%
-  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),VanTreeUBC$date_planted))/365)
+VanTreeUBC <- filter(vancouver_trees, neighbourhood_name %in% chosen_area) 
+VanTreeUBC <- mutate(VanTreeUBC,tree_age = as.numeric(difftime(as.Date("2021-10-09"),VanTreeUBC$date_planted))/365)
 
 ```
-(Q1.2.1) Answer: 
-I choose question-1 and question-
-```{r}
-# (1) Compute the range, mean, and two other summary statistics of diameter
+**(Q1.2.1)**: 
 
-Ans1.2.1_d <-VanTreeUBC %>% 
+Does different species have different relationships between the tree age and diameter? 
+
+**(A1.2.1)**:
+
+I choose question-**1** and question-**5** to understand the relationship between the tree age and diameter. I used the "**summarise**" function to know the overall variations of the diameter and the tree age. Becuase there are too many species, I only obtain the top 5% in observation amounts of species for the following analysis. Only 11 out of 219 species stay. By the answer to question-5, I found inconsistent relationships between the **diameter** and the **tree age**. For example, the mean tree age of **ACERIFOLIA X**(19.6 years) is smaller than **EUCHLORA X**(27.7 years), but the mean diameter of **ACERIFOLIA X**(27.3 inches) is larger than **EUCHLORA X**(13.3 inches). Therefore, **_the relationships between diameter and the tree age differ from species to species_**. 
+
+
+```{r}
+# AnsFor(1) Compute the range, mean, and two other summary statistics of diameter
+
+# Compute the statistics of the "diameter"
+Ans1.2.1_d <-VanTreeUBC %>%
   group_by(species_name) %>%
   summarise(across(diameter, .f=list("mean"=mean,"min"=min,"max"=max,"median"=min,"sd"=sd),na.rm=TRUE),n=n()) %>%
-  mutate(range = diameter_max-diameter_min) %>%
-  filter(n>=quantile(Ans1.2.1_d$n,probs=0.95))
-head(Ans1.2.1)
+  mutate(range = diameter_max-diameter_min) 
+# Because there are too many species (totally 219), I only keep the first 5% (totally 11) with respect to observation amounts for the following analysis.
+Ans1.2.1_d <- filter(Ans1.2.1_d, n>=quantile(Ans1.2.1_d$n,probs=0.95))
+head(Ans1.2.1_d)
 
+# Compute the mean tree age across different species, and keep the same species as diameter statistics (i.e. Ans1.2.1_d).
 Ans1.2.1_y <-VanTreeUBC %>% 
   group_by(species_name) %>%
   summarise(across(tree_age, mean,na.rm=TRUE)) %>%
   filter(species_name %in% Ans1.2.1_d$species_name)
+head(Ans1.2.1_y)
+  
+# AnsFor(5) Create a graph out of summarized variables that has at least two geom layers.
+# I plot tree_age (x-axis) against diameter_max (y-axis).
+ggplot(data=data.frame(x=Ans1.2.1_y$tree_age, y=Ans1.2.1_d$diameter_mean),aes(x=x,y=y,label=Ans1.2.1_y$species_name))+
+  geom_point()+geom_line()+geom_text(check_overlap = TRUE)+
+  xlab("mean tree age of each species (year)")+ylab("mean diameter (inch)")
 
-ggplot(data=data.frame(x=Ans1.2.1_y$tree_age, y=Ans1.2.1_d$diameter_max),aes(x=x,y=y))
 
+print("Tree age:")
+print(format(round(Ans1.2.1_y$tree_age, 1), nsmall = 1))
+print("Mean diameter:")
+print(format(round(Ans1.2.1_d$diameter_mean, 1), nsmall = 1))
+
+# Divide a new data.frame only with the chosen 11 species. I will use it for the following analysis.
+VanTreeUBC_chosen<- VanTreeUBC %>%
+  filter(species_name %in% Ans1.2.1_d$species_name)
 
 ```
-(Q1.2.2) Answer:
+**(Q1.2.2)**: 
 
-(Q1.2.3) Answer:
+Is there any obvious relationship between the root barriers the diameter of trees? 
 
-(Q1.2.4) Answer:
+**(A1.2.2)**:
+
+I choose question-**2** and question-**5** to show the relationship between the root barriers and the tree diameter. According to the answer to question-2 (Ans1.2.2), I found that most trees grew up without root barriers. Then, I further checked the diameter variations under two different conditions (with/without root barriers). Then, the trees growing up with root barriers have smaller diameters than those without root barriers according to the boxplots except **HIPPOCASTANUM**. Therefore, root barriers might be a factor that influences tree growth.
+
+```{r}
+# AnsFor(2) Compute the number of observations for at least one of your categorical variables
+
+# Try to count the total numbers of two categories in "root barriers" from each species. 
+Ans1.2.2 <- VanTreeUBC_chosen %>%
+  group_by(species_name, root_barrier) %>%
+  summarise(num=n()) %>%
+  pivot_wider(names_from = root_barrier, values_from=num)
+
+# Try to calculate the proportions of each category
+Ans1.2.2 <- replace(Ans1.2.2,is.na(Ans1.2.2),0) %>%
+  mutate(total = N+Y) %>%
+  mutate(Ratio_N_perc = N/total) %>%
+  mutate(Ratio_Y_perc = Y/total) 
+  
+# Then, the result reveals that most observations are classified as "No root barrier".
+head(Ans1.2.2)
+
+
+# AnsFor(5) Create a graph out of summarized variables that has at least two geom layers.
+# Choose geom_jitter & geom_bloxplot to demonstrate the data
+ggplot(VanTreeUBC_chosen,aes(y=species_name,x=diameter,colour=root_barrier))+
+  geom_jitter(alpha=0.5, width=0.2,size=0.2)+
+  geom_boxplot(alpha=0.8)
+
+```
+**(Q1.2.3)**: 
+
+Are the trees in the same species planted in the same area? What is the spatial distribution of different tree species? 
+
+**(A1.2.3)**:
+
+I choose question-**2** and question-**7** to investigate the spatial characteristics of trees. The answer to question-2 indicates the amounts of each species in every neighborhood. Based on the plot for question-7, some regional distributions can be found. For example, there are more **CERASIFERA** planted in the northern part of "**ARBUTUS-RIDGE**", and it might be hard to find "EUCHLORA X", "HIPPOCASTANUM", and "PSEUDOPLATANUS" in this area. To sum up, trees are planted across different areas but a little bit unevenly. Among all species, "AMERICANA", "CERASIFERA", "PLATANOIDES", and "SERRULATA" are relatively common tree species nearing UBC at Vancouver.
+
+
+```{r}
+# worksheet_a03:Q2.5 count tree num. (x) neighborhood name (y) species name
+# know the aggregation
+Ans1.2.3 <- VanTreeUBC_chosen %>%
+  group_by(species_name, neighbourhood_name) %>%
+  summarise(num=n()) %>%
+  pivot_wider(names_from = neighbourhood_name, values_from=num)
+
+
+
+# Plot the distributions of trees and divide them into subplots according to species names.
+# Set the transparency as 0.4, and the point size as 0.7.
+ggplot(VanTreeUBC_chosen,aes(longitude,latitude,colour=neighbourhood_name))+
+  geom_point(alpha=0.4,size=0.5,na.rm=TRUE)+
+  xlab("Longitude (deg)")+ylab("Latitude (deg)")+
+  scale_color_brewer(palette="Set1")+
+  facet_wrap(~species_name)+ theme(legend.position = c(0.9, 0.1),legend.text = element_text(size=8))
+```
+
+
+**(Q1.2.4)**: 
+
+Is there any spatial trend in the tree diameter in different species? 
+
+**(A1.2.4)**:
+
+I choose question-**3** and question-**7** to understand the spatial characteristics of diameter. I choose four common tree species according to the answer to Q1.2.3 because abundant observations is useful when concluding trends. I classify trees into four levels based on the diameter measurements, including small, medium, large, and extra-large. I plot data points on the map and mark the points with different colors according to their diameter levels. I found trees with larger diameters located in the boundary of the points in the "AMERICANA" section, and those with smaller diameters located in the center of the points in the "SERRULATA" section. However, the spatial characteristics are not obvious in all subplots.
+
+```{r}
+
+# Use only four common species:"AMERICANA", "CERASIFERA", "PLATANOIDES", and "SERRULATA"
+# Divide diameter into 4 classes: 1_Small, 2_Median, 3_Large, and 4_ExtraLarge
+Ans1.2.4 <- VanTreeUBC_chosen %>%
+  filter(species_name %in% c("AMERICANA", "CERASIFERA", "PLATANOIDES", "SERRULATA")) %>%
+  mutate(diameter_level = case_when(diameter<10 ~ "1_Small",
+                                    diameter<30 ~ "2_medium",
+                                    diameter<50 ~ "3_Large",
+                                    TRUE ~ "4_Extra-Large"))
+
+# Plot the spatial distributions of the four common species with four diameter levels.
+ggplot(Ans1.2.4,aes(longitude,latitude,colour=diameter_level))+
+  geom_point(alpha=0.9,size=1.1,na.rm=TRUE)+
+  xlab("Longitude (deg)")+ylab("Latitude (deg)")+
+  scale_color_brewer(palette="GnBu")+
+  facet_wrap(~species_name)
+
+```
 
 <!----------------------------------------------------------------------------->
 
