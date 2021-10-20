@@ -223,6 +223,8 @@ ggplot(Ans1.2.4,aes(longitude,latitude,colour=diameter_level))+
 
 ```
 
+
+
 <!----------------------------------------------------------------------------->
 
 ### 1.3 (2.5 points)
@@ -257,20 +259,14 @@ Based on the definition above, can you identify if your data is tidy or untidy? 
 
 **(A2.1)**:
 
-There are 21 variables in my dataset (VanTreeUBC_chosen). I choose "tree_id", "genus_name","species_name","root_barrier","neighbourhood_name","height_range_id","diameter","curb".
+The dataset I used in this mini data analysis consists of 21 variables (VanTreeUBC_chosen). I choose eight variables including "tree_id","root_barrier","height_range_id","diameter","genus_name","species_name","common_name", and "cultivar_name".
 
-"tree_id": Each row is an **observation**, Each column is a **variable**, and Each cell is a **numeric value**.
-"genus_name": Each row is an **observation**, Each column is a **variable**, and Each cell is a **string value**.
-"species_name": Each row is an **observation**, Each column is a **variable**, and Each cell is a **string value**.
-"root_barrier": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including "Y"/"N".
-"neighbourhood_name": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including 5 neighborhoods.
-"height_range_id": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including 10 categorical levels
-"diameter": Each row is an **observation**, Each column is a **variable**, and Each cell is a **numeric value**.
-"curb": Each row is an **observation**, Each column is a **variable**, and Each cell is a **categorical value** including "Y"/"N".
+The "tree_id","root_barrier","height_range_id", and "diameter" follow the three principles of tidy data mentioned above. However, the other four variables are not. The "genus_name","species_name","common_name", and "cultivar_name" are related to names of the trees. The genus and species are taxonomic ranks used in the biological classification. Scientists use those two pieces of information to classify trees. The "common_name" and "cultivar_name" are ways how people call trees in daily life. Therefore, they should be tidied up.
+
 
 ```{r}
-# Show the first 6 rows of "VanTreeUBC_chosen".
-head(VanTreeUBC_chosen)
+# Show the first 5 rows of "VanTreeUBC_chosen".
+head(VanTreeUBC_chosen2)
 
 ```
 
@@ -286,34 +282,37 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 
 <!--------------------------- Start your work below --------------------------->
 
-**(A2.2)**: Because VanTreeUBC_chosen is a tidy dataset, I will untidy it.
+**(A2.2)**: 
+
+Just like the reason mentioned in **A2.1**, the four variables (genus_name, species_name, common_name, cultivar_name) are spread from the tree names. Therefore, the way to tidy up them is to conclude the four variables into two columns. One of the two columns is used to indicate the type of the name, and the other one is used to document the strings obtained from the original four columns.
 
 ```{r}
-# Demonstrate the dataset
-print(VanTreeUBC_chosen, n=5)
 
-# Considering the original dataset is not suitable for this task, I simplify the dataset into a smaller matrix.
-VanTreeUBC_chosen_2 <- VanTreeUBC_chosen %>%
-  group_by(species_name,neighbourhood_name) %>%
-  summarize(num=n())
+# Rename the variables related the tree names. Make those variables starting with "name_".
+VanTreeUBC_chosen_name <- VanTreeUBC_chosen %>%
+  dplyr::rename(name_genus = "genus_name") %>%
+  dplyr::rename(name_species = "species_name") %>%
+  dplyr::rename(name_common = "common_name") %>%
+  dplyr::rename(name_cultivar = "cultivar_name")
 
-# Before untidying:
-print(VanTreeUBC_chosen_2, n=5)
+# Tidy up the name variables:
+VanTreeUBC_chosen_name_td <- VanTreeUBC_chosen_name %>% 
+  pivot_longer(cols      = c(name_genus, name_species,name_common,name_cultivar), 
+               names_to  = c(".value", "NameType"),
+               names_sep = "_")
 
-# Try to untidy the dataset
-A2.2.1 <- pivot_wider(VanTreeUBC_chosen_2, id_cols = species_name, names_from = neighbourhood_name , values_from = num)
+```
 
-# After untidying:
-print(A2.2.1, n=5)
+### Data before tidying up
+```{r}
+head(VanTreeUBC_chosen_name)
+dim(VanTreeUBC_chosen_name)
+```
 
-# Try to tidy the dataset
-A2.2.2 <- pivot_longer(A2.2.1, c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY"), names_to = "neighbourhood_name", values_to = "num")
-
-# Dataset check after tidying:
-print(A2.2.2, n=5)
-
-# check whether the dataset is back to original state.
-identical(A2.2.2,VanTreeUBC_chosen_2)
+### Data after tidying up
+```{r}
+head(VanTreeUBC_chosen_name_td)
+dim(VanTreeUBC_chosen_name_td)
 ```
 
 <!----------------------------------------------------------------------------->
