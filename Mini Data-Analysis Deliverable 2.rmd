@@ -97,7 +97,7 @@ I choose question-**1** and question-**5** to understand the relationship betwee
 
 
 ```{r}
-# AnsFor(1) Compute the range, mean, and two other summary statistics of diameter
+# (1) Compute the range, mean, and two other summary statistics of diameter
 
 # Compute the statistics of the "diameter"
 Ans1.2.1_d <-VanTreeUBC %>%
@@ -115,11 +115,11 @@ Ans1.2.1_y <-VanTreeUBC %>%
   filter(species_name %in% Ans1.2.1_d$species_name)
 head(Ans1.2.1_y)
   
-# AnsFor(5) Create a graph out of summarized variables that has at least two geom layers.
+# (5) Create a graph out of summarized variables that has at least two geom layers.
 # I plot tree_age (x-axis) against diameter_max (y-axis).
 ggplot(data=data.frame(x=Ans1.2.1_y$tree_age, y=Ans1.2.1_d$diameter_mean),aes(x=x,y=y,label=Ans1.2.1_y$species_name))+
   geom_point()+geom_line()+geom_text(check_overlap = TRUE)+
-  xlab("mean tree age of each species (year)")+ylab("mean diameter (inch)")
+  xlab("mean tree age (year)")+ylab("mean diameter (inch)")
 
 
 # Tree age
@@ -141,7 +141,7 @@ Is there any obvious relationship between the root barriers the diameter of tree
 I choose question-**2** and question-**5** to show the relationship between the root barriers and the tree diameter. According to the answer to question-2 (Ans1.2.2), I found that most trees grew up without root barriers. Then, I further checked the diameter variations under two different conditions (with/without root barriers). Then, the trees growing up with root barriers have smaller diameters than those without root barriers according to the boxplots except **HIPPOCASTANUM**. Therefore, root barriers might be a factor that influences tree growth.
 
 ```{r}
-# AnsFor(2) Compute the number of observations for at least one of your categorical variables
+# (2) Compute the number of observations for at least one of your categorical variables
 
 # Try to count the total numbers of two categories in "root barriers" from each species. 
 Ans1.2.2 <- VanTreeUBC_chosen %>%
@@ -159,7 +159,7 @@ Ans1.2.2 <- replace(Ans1.2.2,is.na(Ans1.2.2),0) %>%
 head(Ans1.2.2)
 
 
-# AnsFor(5) Create a graph out of summarized variables that has at least two geom layers.
+# (5) Create a graph out of summarized variables that has at least two geom layers.
 # Choose geom_jitter & geom_bloxplot to demonstrate the data
 ggplot(VanTreeUBC_chosen,aes(y=species_name,x=diameter,colour=root_barrier))+
   geom_jitter(alpha=0.5, width=0.2,size=0.2)+
@@ -176,15 +176,15 @@ I choose question-**2** and question-**7** to investigate the spatial characteri
 
 
 ```{r}
-# worksheet_a03:Q2.5 count tree num. (x) neighborhood name (y) species name
-# know the aggregation
+# (2) Compute the number of observations for at least one of your categorical variables.
+# Use the summarise function to calculate the number
 Ans1.2.3 <- VanTreeUBC_chosen %>%
   group_by(species_name, neighbourhood_name) %>%
   summarise(num=n()) %>%
   pivot_wider(names_from = neighbourhood_name, values_from=num)
 
 
-
+# (7) Make a graph where it makes sense to customize the alpha transparency.
 # Plot the distributions of trees and divide them into subplots according to species names.
 # Set the transparency as 0.4, and the point size as 0.7.
 ggplot(VanTreeUBC_chosen,aes(longitude,latitude,colour=neighbourhood_name))+
@@ -204,7 +204,7 @@ Is there any spatial trend in the tree diameter in different species?
 I choose question-**3** and question-**7** to understand the spatial characteristics of diameter. I choose four common tree species according to the answer to Q1.2.3 because abundant observations is useful when concluding trends. I classify trees into four levels based on the diameter measurements, including small, medium, large, and extra-large. I plot data points on the map and mark the points with different colors according to their diameter levels. I found trees with larger diameters located in the boundary of the points in the "AMERICANA" section, and those with smaller diameters located in the center of the points in the "SERRULATA" section. However, the spatial characteristics are not obvious in all subplots.
 
 ```{r}
-
+# (3) Create a categorical variable with 3 or more groups from an existing numerical variable. 
 # Use only four common species:"AMERICANA", "CERASIFERA", "PLATANOIDES", and "SERRULATA"
 # Divide diameter into 4 classes: 1_Small, 2_Median, 3_Large, and 4_ExtraLarge
 Ans1.2.4 <- VanTreeUBC_chosen %>%
@@ -214,6 +214,7 @@ Ans1.2.4 <- VanTreeUBC_chosen %>%
                                     diameter<50 ~ "3_Large",
                                     TRUE ~ "4_Extra-Large"))
 
+# (7) Make a graph where it makes sense to customize the alpha transparency.
 # Plot the spatial distributions of the four common species with four diameter levels.
 ggplot(Ans1.2.4,aes(longitude,latitude,colour=diameter_level))+
   geom_point(alpha=0.9,size=1.1,na.rm=TRUE)+
@@ -266,7 +267,7 @@ The "tree_id","root_barrier","height_range_id", and "diameter" follow the three 
 
 ```{r}
 # Show the first 5 rows of "VanTreeUBC_chosen".
-head(VanTreeUBC_chosen2)
+head(VanTreeUBC_chosen)
 
 ```
 
@@ -325,6 +326,40 @@ Try to choose a version of your data that you think will be appropriate to answe
 
 <!--------------------------- Start your work below --------------------------->
 
+**(A2.3)**: 
+According to the analyses in Q1.2, I decided to keep the first and the fourth research questions.
+1. *Does different species have different relationships between the tree age and diameter?*
+4. *Is there any spatial trend in the tree height or diameter in different areas?*
+
+Because in the plot for Q1.2.1, I found that the mean tree diameters didn't variate along with the mean tree age. When I marked the species name on the plot, I noticed that some species might be the potential to have a larger mean tree diameter than other species with larger mean tree age. So, it's interesting to discuss the differences between the two variables between species. 
+
+The plot for Q1.2.3 showed an uneven distribution of trees, which reveals only the amount of information rather than the height and diameter. Only the number of observations for each species is not enough. Hence, I will discuss the spatial variation of the height/diameter measurements based on different regions rather than the species. 
+
+In conclusion, I will need the variables including "genus_name", "species_name", "neighbourhood_name", "height_range_id", "diameter", "longitude", "latitude", "tree_age". Then, I want to drop the NA data in the dataset.
+
+In order to create a dataset for my analysis, I will need the following functions to manipulate the data:
+
+(1) filter: Extract the observations in specific areas
+(2) mutate: Calculate the age of trees
+(3) select: Select the specific variables
+(4) drop_na: Drop rows containing missing values
+
+```{r}
+# List all the neighborhoods I am interested in.
+chosen_area <- c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY")
+
+VanTreeUBC <- vancouver_trees%>%
+  # Extract the observations in specific areas
+  filter(neighbourhood_name %in% chosen_area) %>% 
+  # Calculate the age of trees
+  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),VanTreeUBC$date_planted))/365) %>% 
+  # Select the specific variables
+  select(c("genus_name", "species_name", "neighbourhood_name", "height_range_id", "diameter", "longitude", "latitude", "tree_age"))%>% 
+  # Drop rows containing missing values
+  drop_na()
+  
+
+```
 
 <!----------------------------------------------------------------------------->
 
