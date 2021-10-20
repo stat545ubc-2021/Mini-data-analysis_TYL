@@ -87,12 +87,10 @@ Make sure it's clear what research question you are doing each operation for!
 # (0) Definition of chosen areas
 # Answer: Listing all neighborhood names and pick observations in specific areas.
 #         Neighborhoods located between UBC and Hwy99 are defined as chosen areas.
-#all_neighbor <- vancouver_trees %>%
-#  group_by(neighbourhood_name) %>%
-#  count()
+
 chosen_area <- c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY")
-VanTreeUBC <- filter(vancouver_trees, neighbourhood_name %in% chosen_area) 
-VanTreeUBC <- mutate(VanTreeUBC,tree_age = as.numeric(difftime(as.Date("2021-10-09"),VanTreeUBC$date_planted))/365)
+VanTreeUBC <- filter(vancouver_trees, neighbourhood_name %in% chosen_area) %>%
+  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),date_planted))/365)
 
 ```
 **(Q1.2.1)**: 
@@ -101,7 +99,7 @@ Does different species have different relationships between the tree age and dia
 
 **(A1.2.1)**:
 
-I choose question-**1** and question-**5** to understand the relationship between the tree age and diameter. I used the "**summarise**" function to know the overall variations of the diameter and the tree age. Because there are too many species, I only obtain the top 5% in observation amounts of species for the following analysis. Only 11 out of 219 species stay. By the answer to question-5, I found inconsistent relationships between the **diameter** and the **tree age**. For example, the mean tree age of **ACERIFOLIA X**(19.6 years) is smaller than **EUCHLORA X**(27.7 years), but the mean diameter of **ACERIFOLIA X**(27.3 inches) is larger than **EUCHLORA X**(13.3 inches). Therefore, **_the relationships between diameter and the tree age differ from species to species_**. 
+I choose **question-1** and **question-5** to understand the relationship between the tree age and diameter. I used the "**summarise**" function to know the overall variations of the diameter and the tree age. Because there are too many species, I only obtain the top 5% in observation amounts of species for the following analysis. Only 11 out of 219 species stay. By the answer to **question-5**, I found inconsistent relationships between the **diameter** and the **tree age**. For example, the mean tree age of **ACERIFOLIA X**(19.6 years) is smaller than **EUCHLORA X**(27.7 years), but the mean diameter of **ACERIFOLIA X**(27.3 inches) is larger than **EUCHLORA X**(13.3 inches). Therefore, **_the relationships between diameter and the tree age differ from species to species_**. 
 
 
 ```{r}
@@ -146,7 +144,7 @@ Is there any obvious relationship between the root barriers the diameter of tree
 
 **(A1.2.2)**:
 
-I choose question-**2** and question-**5** to show the relationship between the root barriers and the tree diameter. According to the answer to question-2 (Ans1.2.2), I found that most trees grew up without root barriers. Then, I further checked the diameter variations under two different conditions (with/without root barriers). Then, the trees growing up with root barriers have smaller diameters than those without root barriers according to the boxplots (the outputted plot for question-5) except **HIPPOCASTANUM**. Therefore, **_root barriers might be a factor that influences tree growth_**.
+I choose **question-2** and **question-5** to show the relationship between the root barriers and the tree diameter. According to the answer to **question-2** (Ans1.2.2), I found that most trees grew up without root barriers. Then, I further checked the diameter variations under two different conditions (with/without root barriers). Then, the trees growing up with root barriers have smaller diameters than those without root barriers according to the boxplots (the outputted plot for **question-5**) except **HIPPOCASTANUM**. Therefore, **_root barriers might be a factor that influences tree growth_**.
 
 ```{r}
 # (2) Compute the number of observations for at least one of your categorical variables
@@ -180,7 +178,7 @@ Are the trees in the same species planted in the same area? What is the spatial 
 
 **(A1.2.3)**:
 
-I choose question-**2** and question-**7** to investigate the spatial characteristics of trees. The answer to question-2 indicates the amounts of each species in every neighborhood. Based on the plot for question-7, some regional distributions can be found. For example, there are more **CERASIFERA** planted in the northern part of "**ARBUTUS-RIDGE**", and it might be hard to find "EUCHLORA X", "HIPPOCASTANUM", and "PSEUDOPLATANUS" in this area. To sum up, **_trees are planted across different areas but a little bit unevenly_**. Among all species, "AMERICANA", "CERASIFERA", "PLATANOIDES", and "SERRULATA" are relatively common tree species nearing UBC at Vancouver.
+I choose **question-2** and **question-7** to investigate the spatial characteristics of trees. The answer to **question-2** indicates the amounts of each species in every neighborhood. Based on the plot for **question-7**, some regional distributions can be found. For example, there are more **CERASIFERA** planted in the northern part of "**ARBUTUS-RIDGE**", and it might be hard to find "EUCHLORA X", "HIPPOCASTANUM", and "PSEUDOPLATANUS" in this area. To sum up, **_trees are planted across different areas but a little bit unevenly_**. Among all species, "AMERICANA", "CERASIFERA", "PLATANOIDES", and "SERRULATA" are relatively common tree species nearing UBC at Vancouver.
 
 
 ```{r}
@@ -209,7 +207,7 @@ Is there any spatial trend in the tree diameter in different species?
 
 **(A1.2.4)**:
 
-I choose question-**3** and question-**7** to understand the spatial characteristics of diameter. I choose four common tree species according to the answer to question-3 because abundant observations are useful when concluding trends. I classify trees into four levels based on the diameter measurements, including small, medium, large, and extra-large. I plot data points on the map and mark the points with different colors according to their diameter levels (the outputted plot for question-7). The transparency helps to distinguish the spatial distributions in the plot. I found trees with larger diameters located in the boundary of the points in the "AMERICANA" section, and those with smaller diameters located in the center of the points in the "SERRULATA" section. However, **_the spatial characteristics are not obvious in all subplots_**.
+I choose **question-3** and **question-7** to understand the spatial characteristics of diameter. I choose four common tree species according to the answer to **question-3** because abundant observations are useful when concluding trends. I classify trees into four levels based on the diameter measurements, including small, medium, large, and extra-large. I plot data points on the map and mark the points with different colors according to their diameter levels (the outputted plot for **question-7**). The transparency helps to distinguish the spatial distributions in the plot. I found trees with larger diameters located in the boundary of the points in the "AMERICANA" section, and those with smaller diameters located in the center of the points in the "SERRULATA" section. However, **_the spatial characteristics are not obvious in all subplots_**.
 
 ```{r}
 # (3) Create a categorical variable with 3 or more groups from an existing numerical variable. 
@@ -360,7 +358,7 @@ VanTreeUBC <- vancouver_trees%>%
   # Extract the observations in specific areas
   filter(neighbourhood_name %in% chosen_area) %>% 
   # Calculate the age of trees
-  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),VanTreeUBC$date_planted))/365) %>% 
+  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),date_planted))/365) %>% 
   # Select the specific variables
   select(c("genus_name", "species_name", "neighbourhood_name", "height_range_id", "diameter", "longitude", "latitude", "tree_age"))%>% 
   # Drop rows containing missing values
