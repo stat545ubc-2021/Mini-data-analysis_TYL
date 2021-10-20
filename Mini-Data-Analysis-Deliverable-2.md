@@ -67,14 +67,16 @@ were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
 
-1.  *Does different species have different relationships between the
-    tree age and diameter?*
-2.  *Is there any obvious relationship between the root barriers the
-    tree growth (height/diameter/curb)?*
-3.  *Are the trees in the same species planted in the same area? What is
-    the spatial distribution of different tree species?*
-4.  *Is there any spatial trend in the tree height or diameter in
-    different areas?*
+**(A1.1)**:
+
+1.  **Does different species have different relationships between the
+    tree age and diameter?**
+2.  **Is there any obvious relationship between the root barriers the
+    tree growth (height/diameter/curb)?**
+3.  **Are the trees in the same species planted in the same area? What
+    is the spatial distribution of different tree species?**
+4.  **Is there any spatial trend in the tree height or diameter in
+    different areas?**
     <!----------------------------------------------------------------------------->
 
 ### 1.2 (10 points)
@@ -120,19 +122,21 @@ for\!
 
 <!------------------------- Start your work below ----------------------------->
 
-**\[Prepare for the dataset\]** → Extract datasets within the chosen
-areas (which are near UBC) and name the variable as “**VanTreeUBC**”.
+**(A1.2)**
+
+**\[Data pre-processing\]**
+
+→ Extract datasets within the chosen areas (which are close to UBC) and
+name the variable as “**VanTreeUBC**”.
 
 ``` r
 # (0) Definition of chosen areas
 # Answer: Listing all neighborhood names and pick observations in specific areas.
 #         Neighborhoods located between UBC and Hwy99 are defined as chosen areas.
-all_neighbor <- vancouver_trees %>%
-  group_by(neighbourhood_name) %>%
-  count()
+
 chosen_area <- c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY")
-VanTreeUBC <- filter(vancouver_trees, neighbourhood_name %in% chosen_area) 
-VanTreeUBC <- mutate(VanTreeUBC,tree_age = as.numeric(difftime(as.Date("2021-10-09"),VanTreeUBC$date_planted))/365)
+VanTreeUBC <- filter(vancouver_trees, neighbourhood_name %in% chosen_area) %>%
+  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),date_planted))/365)
 ```
 
 **(Q1.2.1)**:
@@ -142,21 +146,21 @@ and diameter?
 
 **(A1.2.1)**:
 
-I choose question-**1** and question-**5** to understand the
+I choose **question-1** and **question-5** to understand the
 relationship between the tree age and diameter. I used the
 “**summarise**” function to know the overall variations of the
-diameter and the tree age. Becuase there are too many species, I only
+diameter and the tree age. Because there are too many species, I only
 obtain the top 5% in observation amounts of species for the following
-analysis. Only 11 out of 219 species stay. By the answer to question-5,
-I found inconsistent relationships between the **diameter** and the
-**tree age**. For example, the mean tree age of **ACERIFOLIA X**(19.6
-years) is smaller than **EUCHLORA X**(27.7 years), but the mean diameter
-of **ACERIFOLIA X**(27.3 inches) is larger than **EUCHLORA X**(13.3
-inches). Therefore, ***the relationships between diameter and the tree
-age differ from species to species***.
+analysis. Only 11 out of 219 species stay. By the answer to
+**question-5**, I found inconsistent relationships between the
+**diameter** and the **tree age**. For example, the mean tree age of
+**ACERIFOLIA X**(19.6 years) is smaller than **EUCHLORA X**(27.7 years),
+but the mean diameter of **ACERIFOLIA X**(27.3 inches) is larger than
+**EUCHLORA X**(13.3 inches). Therefore, ***the relationships between
+diameter and the tree age differ from species to species***.
 
 ``` r
-# AnsFor(1) Compute the range, mean, and two other summary statistics of diameter
+# (1) Compute the range, mean, and two other summary statistics of diameter
 
 # Compute the statistics of the "diameter"
 Ans1.2.1_d <-VanTreeUBC %>%
@@ -199,11 +203,11 @@ head(Ans1.2.1_y)
     ## 6 KOBUS              16.7
 
 ``` r
-# AnsFor(5) Create a graph out of summarized variables that has at least two geom layers.
+# (5) Create a graph out of summarized variables that has at least two geom layers.
 # I plot tree_age (x-axis) against diameter_max (y-axis).
 ggplot(data=data.frame(x=Ans1.2.1_y$tree_age, y=Ans1.2.1_d$diameter_mean),aes(x=x,y=y,label=Ans1.2.1_y$species_name))+
   geom_point()+geom_line()+geom_text(check_overlap = TRUE)+
-  xlab("mean tree age of each species (year)")+ylab("mean diameter (inch)")
+  xlab("mean tree age (year)")+ylab("mean diameter (inch)")
 ```
 
 ![](Mini-Data-Analysis-Deliverable-2_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
@@ -237,17 +241,18 @@ of trees?
 
 **(A1.2.2)**:
 
-I choose question-**2** and question-**5** to show the relationship
+I choose **question-2** and **question-5** to show the relationship
 between the root barriers and the tree diameter. According to the answer
-to question-2 (Ans1.2.2), I found that most trees grew up without root
-barriers. Then, I further checked the diameter variations under two
+to **question-2** (Ans1.2.2), I found that most trees grew up without
+root barriers. Then, I further checked the diameter variations under two
 different conditions (with/without root barriers). Then, the trees
 growing up with root barriers have smaller diameters than those without
-root barriers according to the boxplots except **HIPPOCASTANUM**.
-Therefore, root barriers might be a factor that influences tree growth.
+root barriers according to the boxplots (the outputted plot for
+**question-5**) except **HIPPOCASTANUM**. Therefore, ***root barriers
+might be a factor that influences tree growth***.
 
 ``` r
-# AnsFor(2) Compute the number of observations for at least one of your categorical variables
+# (2) Compute the number of observations for at least one of your categorical variables
 
 # Try to count the total numbers of two categories in "root barriers" from each species. 
 Ans1.2.2 <- VanTreeUBC_chosen %>%
@@ -281,7 +286,7 @@ head(Ans1.2.2)
     ## 6 KOBUS            658    14   672        0.979      0.0208
 
 ``` r
-# AnsFor(5) Create a graph out of summarized variables that has at least two geom layers.
+# (5) Create a graph out of summarized variables that has at least two geom layers.
 # Choose geom_jitter & geom_bloxplot to demonstrate the data
 ggplot(VanTreeUBC_chosen,aes(y=species_name,x=diameter,colour=root_barrier))+
   geom_jitter(alpha=0.5, width=0.2,size=0.2)+
@@ -296,20 +301,21 @@ spatial distribution of different tree species?
 
 **(A1.2.3)**:
 
-I choose question-**2** and question-**7** to investigate the spatial
-characteristics of trees. The answer to question-2 indicates the amounts
-of each species in every neighborhood. Based on the plot for question-7,
-some regional distributions can be found. For example, there are more
-**CERASIFERA** planted in the northern part of “**ARBUTUS-RIDGE**”, and
-it might be hard to find “EUCHLORA X”, “HIPPOCASTANUM”, and
-“PSEUDOPLATANUS” in this area. To sum up, trees are planted across
-different areas but a little bit unevenly. Among all species,
-“AMERICANA”, “CERASIFERA”, “PLATANOIDES”, and “SERRULATA” are
-relatively common tree species nearing UBC at Vancouver.
+I choose **question-2** and **question-7** to investigate the spatial
+characteristics of trees. The answer to **question-2** indicates the
+amounts of each species in every neighborhood. Based on the plot for
+**question-7**, some regional distributions can be found. For example,
+there are more **CERASIFERA** planted in the northern part of
+“**ARBUTUS-RIDGE**”, and it might be hard to find “EUCHLORA X”,
+“HIPPOCASTANUM”, and “PSEUDOPLATANUS” in this area. To sum up,
+***trees are planted across different areas but a little bit
+unevenly***. Among all species, “AMERICANA”, “CERASIFERA”,
+“PLATANOIDES”, and “SERRULATA” are relatively common tree species
+nearing UBC at Vancouver.
 
 ``` r
-# worksheet_a03:Q2.5 count tree num. (x) neighborhood name (y) species name
-# know the aggregation
+# (2) Compute the number of observations for at least one of your categorical variables.
+# Use the summarise function to calculate the number
 Ans1.2.3 <- VanTreeUBC_chosen %>%
   group_by(species_name, neighbourhood_name) %>%
   summarise(num=n()) %>%
@@ -319,6 +325,7 @@ Ans1.2.3 <- VanTreeUBC_chosen %>%
     ## `summarise()` has grouped output by 'species_name'. You can override using the `.groups` argument.
 
 ``` r
+# (7) Make a graph where it makes sense to customize the alpha transparency.
 # Plot the distributions of trees and divide them into subplots according to species names.
 # Set the transparency as 0.4, and the point size as 0.7.
 ggplot(VanTreeUBC_chosen,aes(longitude,latitude,colour=neighbourhood_name))+
@@ -336,19 +343,22 @@ Is there any spatial trend in the tree diameter in different species?
 
 **(A1.2.4)**:
 
-I choose question-**3** and question-**7** to understand the spatial
+I choose **question-3** and **question-7** to understand the spatial
 characteristics of diameter. I choose four common tree species according
-to the answer to Q1.2.3 because abundant observations is useful when
-concluding trends. I classify trees into four levels based on the
+to the answer to **question-3** because abundant observations are useful
+when concluding trends. I classify trees into four levels based on the
 diameter measurements, including small, medium, large, and extra-large.
 I plot data points on the map and mark the points with different colors
-according to their diameter levels. I found trees with larger diameters
-located in the boundary of the points in the “AMERICANA” section, and
-those with smaller diameters located in the center of the points in the
-“SERRULATA” section. However, the spatial characteristics are not
-obvious in all subplots.
+according to their diameter levels (the outputted plot for
+**question-7**). The transparency helps to distinguish the spatial
+distributions in the plot. I found trees with larger diameters located
+in the boundary of the points in the “AMERICANA” section, and those with
+smaller diameters located in the center of the points in the “SERRULATA”
+section. However, ***the spatial characteristics are not obvious in all
+subplots***.
 
 ``` r
+# (3) Create a categorical variable with 3 or more groups from an existing numerical variable. 
 # Use only four common species:"AMERICANA", "CERASIFERA", "PLATANOIDES", and "SERRULATA"
 # Divide diameter into 4 classes: 1_Small, 2_Median, 3_Large, and 4_ExtraLarge
 Ans1.2.4 <- VanTreeUBC_chosen %>%
@@ -358,6 +368,7 @@ Ans1.2.4 <- VanTreeUBC_chosen %>%
                                     diameter<50 ~ "3_Large",
                                     TRUE ~ "4_Extra-Large"))
 
+# (7) Make a graph where it makes sense to customize the alpha transparency.
 # Plot the spatial distributions of the four common species with four diameter levels.
 ggplot(Ans1.2.4,aes(longitude,latitude,colour=diameter_level))+
   geom_point(alpha=0.9,size=1.1,na.rm=TRUE)+
@@ -385,7 +396,10 @@ research questions are yielding interesting results?
 According to the results shown above, I found that there is no specific
 spatial distribution in tree species. Maybe I should modify my research
 questions to investigate the relationship between species and tree
-growth variables (height/diameter/curb/tree age). In my opinion, the
+growth variables (height/diameter/curb/tree age). That might help to
+identify the spatial characteristics in tree growth near UBC (The main
+direction addressed in milestone 1 is **" Is there any spatial
+difference in tree growth in the areas near UBC?"**). In my opinion, the
 result of Q1.2.1 is interesting. This plot implies that species might be
 a critical factor regarding the relationship between mean diameter and
 mean tree age. That is worth being further studied.
@@ -417,29 +431,24 @@ pick 8, and explain whether the data is untidy or tidy.
 
 **(A2.1)**:
 
-There are 21 variables in my dataset (VanTreeUBC\_chosen). I choose
-“tree\_id”,
-“genus\_name”,“species\_name”,“root\_barrier”,“neighbourhood\_name”,“height\_range\_id”,“diameter”,“curb”.
+The dataset I used in this mini data analysis consists of 21 variables
+(VanTreeUBC\_chosen). I choose eight variables including
+“tree\_id”,“root\_barrier”,“height\_range\_id”,“diameter”,“genus\_name”,“species\_name”,“common\_name”,
+and “cultivar\_name”.
 
-“tree\_id”: Each row is an **observation**, Each column is a
-**variable**, and Each cell is a **numeric value**. “genus\_name”: Each
-row is an **observation**, Each column is a **variable**, and Each cell
-is a **string value**. “species\_name”: Each row is an **observation**,
-Each column is a **variable**, and Each cell is a **string value**.
-“root\_barrier”: Each row is an **observation**, Each column is a
-**variable**, and Each cell is a **categorical value** including
-“Y”/“N”. “neighbourhood\_name”: Each row is an **observation**,
-Each column is a **variable**, and Each cell is a **categorical value**
-including 5 neighborhoods. “height\_range\_id”: Each row is an
-**observation**, Each column is a **variable**, and Each cell is a
-**categorical value** including 10 categorical levels “diameter”: Each
-row is an **observation**, Each column is a **variable**, and Each cell
-is a **numeric value**. “curb”: Each row is an **observation**, Each
-column is a **variable**, and Each cell is a **categorical value**
-including “Y”/“N”.
+The “tree\_id”,“root\_barrier”,“height\_range\_id”, and “diameter”
+follow the three principles of tidy data mentioned above. However, the
+other four variables are not. The
+“genus\_name”,“species\_name”,“common\_name”, and
+“cultivar\_name” are related to names of the trees. The genus and
+species are taxonomic ranks used in the biological classification.
+Scientists use those two pieces of information to classify trees. The
+“common\_name” and “cultivar\_name” are ways how people call trees in
+daily life. Therefore, they should be tidied up into the same variable
+regarding “Name”.
 
 ``` r
-# Show the first 6 rows of "VanTreeUBC_chosen".
+# Show the first 5 rows of "VanTreeUBC_chosen".
 head(VanTreeUBC_chosen)
 ```
 
@@ -473,97 +482,82 @@ and “after”.
 
 <!--------------------------- Start your work below --------------------------->
 
-**(A2.2)**: Because VanTreeUBC\_chosen is a tidy dataset, I will untidy
-it.
+**(A2.2)**:
+
+Just like the reason mentioned in **A2.1**, the four variables
+(genus\_name, species\_name, common\_name, cultivar\_name) are spread
+from the tree names. Therefore, the way to tidy up them is to conclude
+the four variables into two columns. One of the two columns is used to
+indicate the type of the name, and the other one is used to document the
+strings obtained from the original four columns.
 
 ``` r
-# Demonstrate the dataset
-print(VanTreeUBC_chosen, n=5)
+# Rename the variables related the tree names. Make those variables starting with "name_".
+VanTreeUBC_chosen_name <- VanTreeUBC_chosen %>%
+  dplyr::rename(name_genus = "genus_name") %>%
+  dplyr::rename(name_species = "species_name") %>%
+  dplyr::rename(name_common = "common_name") %>%
+  dplyr::rename(name_cultivar = "cultivar_name")
+
+# Tidy up the name variables:
+VanTreeUBC_chosen_name_td <- VanTreeUBC_chosen_name %>% 
+  pivot_longer(cols      = c(name_genus, name_species,name_common,name_cultivar), 
+               names_to  = c(".value", "NameType"),
+               names_sep = "_")
 ```
 
-    ## # A tibble: 18,672 × 21
-    ##   tree_id civic_number std_street   genus_name species_name cultivar_name
+### Data before tidying up
+
+``` r
+head(VanTreeUBC_chosen_name)
+```
+
+    ## # A tibble: 6 × 21
+    ##   tree_id civic_number std_street   name_genus name_species name_cultivar
     ##     <dbl>        <dbl> <chr>        <chr>      <chr>        <chr>        
     ## 1  155373         1900 CYPRESS ST   PRUNUS     CERASIFERA   NIGRA        
     ## 2  155413         2485 W BROADWAY   ULMUS      AMERICANA    BRANDON      
     ## 3  155436         3039 COURTENAY ST MAGNOLIA   KOBUS        <NA>         
     ## 4  155446         2246 W 15TH AV    ACER       RUBRUM       KARPICK      
     ## 5  156061         2659 W 19TH AV    FRAXINUS   AMERICANA    <NA>         
-    ## # … with 18,667 more rows, and 15 more variables: common_name <chr>,
-    ## #   assigned <chr>, root_barrier <chr>, plant_area <chr>,
-    ## #   on_street_block <dbl>, on_street <chr>, neighbourhood_name <chr>,
-    ## #   street_side_name <chr>, height_range_id <dbl>, diameter <dbl>, curb <chr>,
-    ## #   date_planted <date>, longitude <dbl>, latitude <dbl>, tree_age <dbl>
+    ## 6  156242         3638 HUDSON ST    ACER       PLATANOIDES  <NA>         
+    ## # … with 15 more variables: name_common <chr>, assigned <chr>,
+    ## #   root_barrier <chr>, plant_area <chr>, on_street_block <dbl>,
+    ## #   on_street <chr>, neighbourhood_name <chr>, street_side_name <chr>,
+    ## #   height_range_id <dbl>, diameter <dbl>, curb <chr>, date_planted <date>,
+    ## #   longitude <dbl>, latitude <dbl>, tree_age <dbl>
 
 ``` r
-# Considering the original dataset is not suitable for this task, I simplify the dataset into a smaller matrix.
-VanTreeUBC_chosen_2 <- VanTreeUBC_chosen %>%
-  group_by(species_name,neighbourhood_name) %>%
-  summarize(num=n())
+dim(VanTreeUBC_chosen_name)
 ```
 
-    ## `summarise()` has grouped output by 'species_name'. You can override using the `.groups` argument.
+    ## [1] 18672    21
+
+### Data after tidying up
 
 ``` r
-# Before untidying:
-print(VanTreeUBC_chosen_2, n=5)
+head(VanTreeUBC_chosen_name_td)
 ```
 
-    ## # A tibble: 55 × 3
-    ## # Groups:   species_name [11]
-    ##   species_name   neighbourhood_name   num
-    ##   <chr>          <chr>              <int>
-    ## 1 ACERIFOLIA   X ARBUTUS-RIDGE        103
-    ## 2 ACERIFOLIA   X DUNBAR-SOUTHLANDS    168
-    ## 3 ACERIFOLIA   X KITSILANO            141
-    ## 4 ACERIFOLIA   X SHAUGHNESSY          238
-    ## 5 ACERIFOLIA   X WEST POINT GREY      129
-    ## # … with 50 more rows
+    ## # A tibble: 6 × 19
+    ##   tree_id civic_number std_street assigned root_barrier plant_area
+    ##     <dbl>        <dbl> <chr>      <chr>    <chr>        <chr>     
+    ## 1  155373         1900 CYPRESS ST N        N            7         
+    ## 2  155373         1900 CYPRESS ST N        N            7         
+    ## 3  155373         1900 CYPRESS ST N        N            7         
+    ## 4  155373         1900 CYPRESS ST N        N            7         
+    ## 5  155413         2485 W BROADWAY N        N            7         
+    ## 6  155413         2485 W BROADWAY N        N            7         
+    ## # … with 13 more variables: on_street_block <dbl>, on_street <chr>,
+    ## #   neighbourhood_name <chr>, street_side_name <chr>, height_range_id <dbl>,
+    ## #   diameter <dbl>, curb <chr>, date_planted <date>, longitude <dbl>,
+    ## #   latitude <dbl>, tree_age <dbl>, NameType <chr>, name <chr>
 
 ``` r
-# Try to untidy the dataset
-A2.2.1 <- pivot_wider(VanTreeUBC_chosen_2, id_cols = species_name, names_from = neighbourhood_name , values_from = num)
-
-# After untidying:
-print(A2.2.1, n=5)
+dim(VanTreeUBC_chosen_name_td)
 ```
 
-    ## # A tibble: 11 × 6
-    ## # Groups:   species_name [11]
-    ##   species_name   `ARBUTUS-RIDGE` `DUNBAR-SOUTHLANDS` KITSILANO SHAUGHNESSY
-    ##   <chr>                    <int>               <int>     <int>       <int>
-    ## 1 ACERIFOLIA   X             103                 168       141         238
-    ## 2 AMERICANA                  225                 435       260         780
-    ## 3 CERASIFERA                 895                1061       435         632
-    ## 4 EUCHLORA   X                55                  78       432          72
-    ## 5 HIPPOCASTANUM              125                 274       277         311
-    ## # … with 6 more rows, and 1 more variable: WEST POINT GREY <int>
-
-``` r
-# Try to tidy the dataset
-A2.2.2 <- pivot_longer(A2.2.1, c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY"), names_to = "neighbourhood_name", values_to = "num")
-
-# Dataset check after tidying:
-print(A2.2.2, n=5)
-```
-
-    ## # A tibble: 55 × 3
-    ## # Groups:   species_name [11]
-    ##   species_name   neighbourhood_name   num
-    ##   <chr>          <chr>              <int>
-    ## 1 ACERIFOLIA   X ARBUTUS-RIDGE        103
-    ## 2 ACERIFOLIA   X DUNBAR-SOUTHLANDS    168
-    ## 3 ACERIFOLIA   X KITSILANO            141
-    ## 4 ACERIFOLIA   X SHAUGHNESSY          238
-    ## 5 ACERIFOLIA   X WEST POINT GREY      129
-    ## # … with 50 more rows
-
-``` r
-# check whether the dataset is back to original state.
-identical(A2.2.2,VanTreeUBC_chosen_2)
-```
-
-    ## [1] TRUE
+    ## [1] 74688    19
 
 <!----------------------------------------------------------------------------->
 
@@ -580,6 +574,55 @@ functions that we’ve covered so far (i.e. by filtering, cleaning,
 tidy’ing, dropping irrelvant columns, etc.).
 
 <!--------------------------- Start your work below --------------------------->
+
+**(A2.3)**: According to the analyses in Q1.2, I decided to keep the
+first and the fourth research questions. 1. *Does different species have
+different relationships between the tree age and diameter?* 4. *Is there
+any spatial trend in the tree height or diameter in different areas?*
+
+Because in the plot for Q1.2.1, I found that the mean tree diameters
+didn’t variate along with the mean tree age. When I marked the species
+name on the plot, I noticed that some species might be the potential to
+have a larger mean tree diameter than other species with larger mean
+tree age. So, it’s interesting to discuss the differences between the
+two variables between species.
+
+The plot for Q1.2.3 showed an uneven distribution of trees, which
+reveals only the amount of information rather than the height and
+diameter. Only the number of observations for each species is not
+enough. Hence, I will discuss the spatial variation of the
+height/diameter measurements based on different regions rather than the
+species.
+
+In conclusion, I will need the variables including “genus\_name”,
+“species\_name”, “neighbourhood\_name”, “height\_range\_id”,
+“diameter”, “longitude”, “latitude”, “tree\_age”. Then, I want to
+drop the NA data in the dataset.
+
+In order to create a dataset for my analysis, I will need the following
+functions to manipulate the data:
+
+1)  filter: Extract the observations in specific areas
+2)  mutate: Calculate the age of trees
+3)  select: Select the specific variables
+4)  drop\_na: Drop rows containing missing values
+
+<!-- end list -->
+
+``` r
+# List all the neighborhoods I am interested in.
+chosen_area <- c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY")
+
+VanTreeUBC <- vancouver_trees%>%
+  # Extract the observations in specific areas
+  filter(neighbourhood_name %in% chosen_area) %>% 
+  # Calculate the age of trees
+  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),date_planted))/365) %>% 
+  # Select the specific variables
+  select(c("genus_name", "species_name", "neighbourhood_name", "height_range_id", "diameter", "longitude", "latitude", "tree_age"))%>% 
+  # Drop rows containing missing values
+  drop_na()
+```
 
 <!----------------------------------------------------------------------------->
 
