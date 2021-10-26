@@ -39,8 +39,8 @@ library(tidyverse)
 From Milestone 2, you chose two research questions. What were they? Put them here.
 
 <!-------------------------- Start your work below ---------------------------->
-1. *FILL_THIS_IN*
-2. *FILL_THIS_IN*
+1. *Does different species have different relationships between the tree age and diameter?*
+2. *Is there any spatial trend in the tree height or diameter in different areas?*
 <!----------------------------------------------------------------------------->
 
 
