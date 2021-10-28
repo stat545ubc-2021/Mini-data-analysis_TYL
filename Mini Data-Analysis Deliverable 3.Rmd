@@ -271,6 +271,7 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 
 ```{r}
 Ans2.2<-broom::glance(md1)
+print(Ans2.2)
 
 outputs<-sprintf("Species=%s, Slope= %.4f, Intercept=%.4f, R-squared=%.4f\n", NML[rs_keep$id],md1$coefficients[2],md1$coefficients[1],rs_keep$r.squared)
 cat("Linear regression result\n",outputs)
@@ -282,9 +283,12 @@ cat("Linear regression result\n",outputs)
 
 Based on Plt_2.1.1, it's hard to find obvious trends in the subplots. Therefore, I tried to compute the linear regression models to understand those relationships. According to the table "rs" computed in **Answer 2.1**, I found that the R-squared results are pretty small. Only one species has a strong relationship between tree_age and diameter, which has an R-squared larger than 0.5, so I only plotted this species. 
 
-In this section, I printed out the 
+The species name is "**SERRULATA**". 
 
-The species name is "**SERRULATA**". The slope, intercept, and R-squared values are shown above. Basically, the diameters of **SERRULATA** became larger when the trees got older. However, we can see that there is a vertical cluster at the right end of the plot. Hence, the diameters were influenced by not only tree ages but also other variables. If we want to know the reason for the vertical cluster on the right end of the plot, we need to further study it.
+First, I printed out the results obtained from "**broom::glance**" function. In this part, I got the statistics of the fitting results of the linear model. It helps me understand that there is an obvious relationship between tree age and the diameter by a large R-squared value of 0.615.  
+
+The slope, intercept, and R-squared values are shown above. Basically, the diameters of **SERRULATA** became larger when the trees got older. However, we can see that there is a vertical cluster at the right end of the plot. Hence, the diameters might be influenced by not only tree ages but also other variables. If we want to know the reason for the vertical cluster on the right end of the plot, we need to further study it.
+
 
 <!----------------------------------------------------------------------------->
 
@@ -303,7 +307,15 @@ Take a summary table that you made from Milestone 2 (Exercise 1.2), and write it
 - **Reproducibility criteria**: You should be able to delete the csv file, and remake it simply by knitting this Rmd file. 
   
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+# Summary table I made from Milestone 2
+Ans1.2.1_d <-VanTreeUBC %>%
+  group_by(species_name) %>%
+  summarise(across(diameter, .f=list("mean"=mean,"min"=min,"max"=max,"median"=min,"sd"=sd),na.rm=TRUE),n=n()) %>%
+  mutate(range = diameter_max-diameter_min) 
 
+write_csv(Ans1.2.1_d, here::here("output","exported_file.csv"))
+```
 
 <!----------------------------------------------------------------------------->
 
