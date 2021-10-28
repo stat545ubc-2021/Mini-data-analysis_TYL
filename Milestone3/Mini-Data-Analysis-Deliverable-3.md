@@ -397,6 +397,17 @@ Y, or a single value like a regression coefficient or a p-value.
 <!-------------------------- Start your work below ---------------------------->
 
 ``` r
+Ans2.2<-broom::glance(md1)
+print(Ans2.2)
+```
+
+    ## # A tibble: 1 × 12
+    ##   r.squared adj.r.squared sigma statistic  p.value    df logLik   AIC   BIC
+    ##       <dbl>         <dbl> <dbl>     <dbl>    <dbl> <dbl>  <dbl> <dbl> <dbl>
+    ## 1     0.615         0.614  3.44      731. 7.51e-97     1 -1218. 2442. 2454.
+    ## # … with 3 more variables: deviance <dbl>, df.residual <int>, nobs <int>
+
+``` r
 outputs<-sprintf("Species=%s, Slope= %.4f, Intercept=%.4f, R-squared=%.4f\n", NML[rs_keep$id],md1$coefficients[2],md1$coefficients[1],rs_keep$r.squared)
 cat("Linear regression result\n",outputs)
 ```
@@ -409,14 +420,22 @@ Therefore, I tried to compute the linear regression models to understand
 those relationships. According to the table “rs” computed in **Answer
 2.1**, I found that the R-squared results are pretty small. Only one
 species has a strong relationship between tree\_age and diameter, which
-has an R-squared larger than 0.5, so I only plotted this species. The
-species name is “**SERRULATA**”. The slope, intercept, and R-squared
-values are shown above. Basically, the diameters of **SERRULATA** became
-larger when the trees got older. However, we can see that there is a
-vertical cluster at the right end of the plot. Hence, the diameters were
-influenced by not only tree ages but also other variables. If we want to
-know the reason for the vertical cluster on the right end of the plot,
-we need to further study it.
+has an R-squared larger than 0.5, so I only plotted this species.
+
+The species name is “**SERRULATA**”.
+
+First, I printed out the results obtained from “**broom::glance**”
+function. In this part, I got the statistics of the fitting results of
+the linear model. It helps me understand that there is an obvious
+relationship between tree age and the diameter by a large R-squared
+value of 0.615.
+
+The slope, intercept, and R-squared values are shown above. Basically,
+the diameters of **SERRULATA** became larger when the trees got older.
+However, we can see that there is a vertical cluster at the right end of
+the plot. Hence, the diameters might be influenced by not only tree ages
+but also other variables. If we want to know the reason for the vertical
+cluster on the right end of the plot, we need to further study it.
 
 <!----------------------------------------------------------------------------->
 
@@ -441,6 +460,17 @@ function.
 
 <!-------------------------- Start your work below ---------------------------->
 
+``` r
+# Summary table I made from Milestone 2
+Ans1.2.1_d <-VanTreeUBC %>%
+  group_by(species_name) %>%
+  summarise(across(diameter, .f=list("mean"=mean,"min"=min,"max"=max,"median"=min,"sd"=sd),na.rm=TRUE),n=n()) %>%
+  mutate(range = diameter_max-diameter_min) 
+
+# Output the csv file
+write_csv(Ans1.2.1_d, here::here("output","SummaryTableFromMilestone-2.csv"))
+```
+
 <!----------------------------------------------------------------------------->
 
 ## 3.2 (5 points)
@@ -453,6 +483,11 @@ folder. Use the functions `saveRDS()` and `readRDS()`.
     here.
 
 <!-------------------------- Start your work below ---------------------------->
+
+``` r
+saveRDS(md1, file=here::here("output","Milestone-3_LM.rds"));
+LM<-readRDS(here::here("output","Milestone-3_LM.rds"))
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -486,6 +521,13 @@ them\! They are tremendously helpful.
 You should have at least four folders in the top level of your
 repository: one for each milestone, and one output folder. If there are
 any other folders, these are explained in the main README.
+
+``` r
+# Create the folders (for first time only)
+#dir.create(here::here("Milestone1"))
+#dir.create(here::here("Milestone2"))
+#dir.create(here::here("Milestone3"))
+```
 
 Each milestone document is contained in its respective folder, and
 nowhere else.
