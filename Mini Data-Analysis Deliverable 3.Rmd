@@ -35,6 +35,7 @@ Begin by loading your data and the tidyverse package below:
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
 library(forcats)
+library(lubridate)
 ```
 
 From Milestone 2, you chose two research questions. What were they? Put them here.
