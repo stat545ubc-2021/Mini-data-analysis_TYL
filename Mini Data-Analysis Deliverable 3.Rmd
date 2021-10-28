@@ -315,7 +315,7 @@ Ans1.2.1_d <-VanTreeUBC %>%
   mutate(range = diameter_max-diameter_min) 
 
 # Output the csv file
-write_csv(Ans1.2.1_d, here::here("output","exported_file.csv"))
+write_csv(Ans1.2.1_d, here::here("output","SummaryTableFromMilestone-2.csv"))
 ```
 
 <!----------------------------------------------------------------------------->
