@@ -34,6 +34,7 @@ Begin by loading your data and the tidyverse package below:
 ```{r, message = FALSE}
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
+library(forcats)
 ```
 
 From Milestone 2, you chose two research questions. What were they? Put them here.
@@ -52,7 +53,25 @@ But first, tasks 1 and 2 below ask you to modify a plot you made in a previous m
 
 <!-------------------------- Start your work below ---------------------------->
 
+```{r}
+# (0) Prepare the needed dataset (VanTreeUBC)
 
+# Filter observations in specific five areas
+chosen_area <- c("ARBUTUS-RIDGE","DUNBAR-SOUTHLANDS","KITSILANO","SHAUGHNESSY","WEST POINT GREY")
+VanTreeUBC <- filter(vancouver_trees, neighbourhood_name %in% chosen_area) %>%
+  mutate(tree_age = as.numeric(difftime(as.Date("2021-10-09"),date_planted))/365)
+
+# Filter observations by amounts: Keep the first 5% (totally 11 species) based on observation amounts.
+VanTreeUBC_summary <-VanTreeUBC %>%
+  group_by(species_name) %>%
+  summarise(across(diameter, .f=list("mean"=mean,"min"=min,"max"=max,"median"=min,"sd"=sd),na.rm=TRUE),n=n()) %>%
+  mutate(range = diameter_max-diameter_min) 
+VanTreeUBC_summary <- filter(VanTreeUBC_summary, n>=quantile(VanTreeUBC_summary$n,probs=0.95))
+
+# "VanTreeUBC_chosen" will be used in the following analysis.
+VanTreeUBC_chosen<- VanTreeUBC %>%
+  filter(species_name %in% VanTreeUBC_summary$species_name)
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -73,17 +92,68 @@ Now, choose two of the following tasks.
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 1
 
+Produce a new plot that reorders a factor in your original plot, using the **forcats** package.
 
+```{r}
+# Convert "species_name" from  "chr"  to  "fct"
+VanTreeUBC_chosen$species_name <- as.factor(VanTreeUBC_chosen$species_name)
+head(VanTreeUBC_chosen$species_name)
+
+# Boxplot (in Ans1.2.2) from my milestone 2
+bp1 <- ggplot(VanTreeUBC_chosen,aes(y=species_name,x=diameter))+
+  geom_boxplot(alpha=0.8)
+bp1+ggtitle("Boxplot-1 (from Milestone2): Species against Diameter")+xlab("Diameter (inch)")+ylab("Species")
+
+# Create a new data frame with the levels of "species_name" in increasing order of their average diameter.
+VanTreeUBC_spe_dia <- VanTreeUBC_chosen %>%
+  mutate(species_name = forcats::fct_reorder(species_name,diameter, mean))
+
+# New boxplot 
+bp2 <- ggplot(VanTreeUBC_spe_dia, aes(y=species_name,x=diameter)) +
+  geom_boxplot(alpha=0.8)
+bp2+ggtitle("Boxplot-2 (reordered): Species against Diameter")+xlab("Diameter (inch)")+ylab("Species")
+
+attributes(VanTreeUBC_chosen$species_name)
+attributes(VanTreeUBC_spe_dia$species_name)
+```
+
+In the original plot (Boxplot-1), it's hard to find a trend of tree diameters. After ordering the species names with the mean diameters, I can distinguish the overall variations across species. It helps to understand that different species might have various conditions regarding the diameters. I notice that the "ACEROFLOLIA" has the largest average around 30 inches in diameters.
 
 <!----------------------------------------------------------------------------->
 
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 3
 
+Make a new column that uses a function from the lubridate or tsibble package to modify your original time-based column.
+
+```{r}
+# Extract "date_planted" from the original dataset, and then convert it into "ymd" format
+planted <- VanTreeUBC_chosen %>%
+  select(date_planted) %>% 
+  mutate(date_planted=ymd(date_planted)) 
+
+# Assign end date (same as what I defined in Milestone 1)
+planted$end_ref <-ymd("2021-10-09")
+
+# Create a new interval variable
+int <- interval(planted$date_planted,planted$end_ref)
+
+# Compute tree age information by "lubridate::time_length" function
+VanTreeUBC_chosen$tree_age_2 <- lubridate::time_length(int, "year")
+
+# Compare the tree age information computed by two different ways
+diff_max <- max(VanTreeUBC_chosen$tree_age_2-VanTreeUBC_chosen$tree_age,na.rm=TRUE)
+diff_min <- min(VanTreeUBC_chosen$tree_age_2-VanTreeUBC_chosen$tree_age,na.rm=TRUE)
+cat("Differences between two tree age columns: max = ",diff_max," , min = ",diff_min,"\n")
+
+
+```
+
+In order to analyze the relationships between tree age and tree growth, I have tried to use "**difftime**" to calculate the time length of trees for the "tree_age" variable. However, there is no "year" option in the unit as far as I know. So, I just calculated the time lengths in day unit, and then divided them by 365 as the year lengths. Considering the normal/leap year, the tree age values might be influenced by the computation in this way. In this section, I used the "**lubridate::time_length**" function to obtain the tree age information and compare the two columns. According to the results, the two series are quite similar. Hence, my analysis will not be influenced by the way I used to produce the "tree_age" information.
 
 
 <!----------------------------------------------------------------------------->
