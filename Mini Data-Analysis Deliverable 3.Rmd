@@ -353,6 +353,13 @@ Once you get in the habit of making README files, and seeing more README files i
 
 You should have at least four folders in the top level of your repository: one for each milestone, and one output folder. If there are any other folders, these are explained in the main README.
 
+```{r}
+# Create the folders (for first time only)
+#dir.create(here::here("Milestone1"))
+#dir.create(here::here("Milestone2"))
+#dir.create(here::here("Milestone3"))
+```
+
 Each milestone document is contained in its respective folder, and nowhere else. 
 
 Every level-1 folder (that is, the ones stored in the top level, like "Milestone1" and "output") has a `README` file, explaining in a sentence or two what is in the folder, in plain language (it's enough to say something like "This folder contains the source for Milestone 1").
