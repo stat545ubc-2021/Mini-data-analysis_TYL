@@ -12,8 +12,12 @@ And hopefully the first of many. Let’s get started:
 
 <!-- end list -->
 
-    install.packages("devtools")
-    devtools::install_github("UBC-MDS/datateachr")
+``` r
+# Comment out the installation commands.
+
+# install.packages("devtools")
+# devtools::install_github("UBC-MDS/datateachr")
+```
 
 2.  Load the packages below.
 
@@ -729,7 +733,7 @@ Answer2.1.1 <- ggplot((data=subset(VanTreeUBC, !is.na(height_range_id*10))), aes
 print(Answer2.1.1)
 ```
 
-![](Mini-Data-Analysis-Deliverable-1_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](Mini-Data-Analysis-Deliverable-1_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 # (2) Create a new variable based on other variables in your data
@@ -751,7 +755,7 @@ Answer2.1.3 <- ggplot(Answer2.1.2, aes(tree_age, diameter)) +
 print(Answer2.1.3)
 ```
 
-![](Mini-Data-Analysis-Deliverable-1_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+![](Mini-Data-Analysis-Deliverable-1_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
 
 ``` r
 # (6) Use a boxplot to look at the frequency of different observations within a single variable.
@@ -763,7 +767,7 @@ Answer2.1.4 <- Answer2.1.2 %>%
 Answer2.1.4 + coord_flip()
 ```
 
-![](Mini-Data-Analysis-Deliverable-1_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
+![](Mini-Data-Analysis-Deliverable-1_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->
 
 ### Q2.2: Provide brief explanation of why you chose that exercise in relation to your data.
 
